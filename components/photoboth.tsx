@@ -71,12 +71,56 @@ export default function PhotoBooth() {
             if (frame === "gold") {
                 ctx.strokeStyle = "gold";
                 ctx.lineWidth = 10;
-                ctx.strokeRect(5, 5, canvas.width - 10, canvas.height - 10);
             } else if (frame === "black") {
                 ctx.strokeStyle = "black";
                 ctx.lineWidth = 15;
-                ctx.strokeRect(5, 5, canvas.width - 10, canvas.height - 10);
+            } else if (frame === "silver") {
+                ctx.strokeStyle = "silver";
+                ctx.lineWidth = 10;
+            } else if (frame === "blue") {
+                ctx.strokeStyle = "blue";
+                ctx.lineWidth = 15;
+            } else if (frame === "red") {
+                ctx.strokeStyle = "red";
+                ctx.lineWidth = 15;
+            } else if (frame === "green") {
+                ctx.strokeStyle = "green";
+                ctx.lineWidth = 15;
+            } else if (frame === "purple") {
+                ctx.strokeStyle = "purple";
+                ctx.lineWidth = 15;
+            } else if (frame === "white") {
+                ctx.strokeStyle = "white";
+                ctx.lineWidth = 15;
+            } else if (frame === "brown") {
+                ctx.strokeStyle = "brown";
+                ctx.lineWidth = 10;
+            } else if (frame === "orange") {
+                ctx.strokeStyle = "orange";
+                ctx.lineWidth = 10;
+            } else if (frame === "rainbow") {
+                const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+                gradient.addColorStop(0, "red");
+                gradient.addColorStop(0.2, "orange");
+                gradient.addColorStop(0.4, "yellow");
+                gradient.addColorStop(0.6, "green");
+                gradient.addColorStop(0.8, "blue");
+                gradient.addColorStop(1, "purple");
+                ctx.strokeStyle = gradient;
+                ctx.lineWidth = 12;
+            } else if (frame === "diamond") {
+                ctx.strokeStyle = "lightblue";
+                ctx.lineWidth = 12;
+            } else if (frame === "galaxy") {
+                ctx.strokeStyle = "darkblue";
+                ctx.lineWidth = 12;
+            } else {
+                ctx.strokeStyle = "transparent";
+                ctx.lineWidth = 0;
             }
+
+            ctx.strokeRect(5, 5, canvas.width - 10, canvas.height - 10);
+
 
             images.forEach((src, index) => {
                 const imgPart = new Image();
@@ -84,15 +128,41 @@ export default function PhotoBooth() {
                 imgPart.onload = () => {
                     const xPos = sidePadding;
                     const yPos = topPadding + index * (imgHeight + padding);
-                    ctx.drawImage(imgPart, xPos, yPos, imgWidth, imgHeight);
-
+            
                     if (filter !== "none") {
-                        ctx.globalCompositeOperation = "source-atop";
-                        ctx.fillStyle = filter === "grayscale" ? "rgba(0,0,0,0.5)" : "rgba(255,140,0,0.3)";
-                        ctx.fillRect(xPos, yPos, imgWidth, imgHeight);
-                        ctx.globalCompositeOperation = "source-over";
+                        ctx.filter = "none";
+            
+                        if (filter === "grayscale") {
+                            ctx.filter = "grayscale(100%)";
+                        } else if (filter === "sepia") {
+                            ctx.filter = "sepia(100%)";
+                        } else if (filter === "blur") {
+                            ctx.filter = "blur(5px)";
+                        } else if (filter === "brightness") {
+                            ctx.filter = "brightness(1.5)";
+                        } else if (filter === "contrast") {
+                            ctx.filter = "contrast(1.8)";
+                        } else if (filter === "invert") {
+                            ctx.filter = "invert(100%)";
+                        } else if (filter === "saturate") {
+                            ctx.filter = "saturate(2)";
+                        } else if (filter === "hue-rotate") {
+                            ctx.filter = "hue-rotate(90deg)";
+                        } else if (filter === "shadow") {
+                            ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+                            ctx.shadowBlur = 10;
+                            ctx.shadowOffsetX = 5;
+                            ctx.shadowOffsetY = 5;
+                        }
                     }
-
+            
+                    // Gambar gambar utama setelah filter diterapkan
+                    ctx.drawImage(imgPart, xPos, yPos, imgWidth, imgHeight);
+            
+                    // Reset filter setelah gambar selesai digambar
+                    ctx.filter = "none";
+            
+                    // Tambahkan sticker kalau di gambar ke-3
                     if (index === 2 && sticker) {
                         const stickerImg = new Image();
                         stickerImg.src = sticker;
@@ -101,7 +171,8 @@ export default function PhotoBooth() {
                             ctx.drawImage(stickerImg, xPos + imgWidth - stickerSize - 10, yPos + imgHeight - stickerSize - 10, stickerSize, stickerSize);
                         };
                     }
-
+            
+                    // Tambahkan tanggal di gambar ke-3
                     if (index === 2) {
                         ctx.fillStyle = "black";
                         ctx.font = `${textSize}px 'Courier New', monospace`;
@@ -117,6 +188,7 @@ export default function PhotoBooth() {
                     }
                 };
             });
+            
         };
     };
 
@@ -126,115 +198,159 @@ export default function PhotoBooth() {
     };
 
     return (
-        <div className="flex flex-col items-center gap-4 p-4">
-            <Webcam ref={webcamRef} screenshotFormat="image/png" className="w-full max-w-md rounded-lg shadow-lg" />
-            <button onClick={startCapture} className="px-4 py-2 bg-blue-500 text-white rounded-lg">
+        <div className="flex flex-col items-center gap-6 p-6 min-h-screen text-white">
+            <h1 className="text-3xl font-bold text-indigo-400">Snap & Edit 📸</h1>
+
+            <div className="relative w-full max-w-md">
+                <Webcam
+                    ref={webcamRef}
+                    screenshotFormat="image/png"
+                    className="w-full rounded-2xl shadow-lg border-4 border-indigo-500"
+                />
+            </div>
+
+            <button
+                onClick={startCapture}
+                className="px-5 py-3 bg-indigo-500 hover:bg-indigo-600 transition-all duration-300 text-white rounded-xl shadow-md text-lg font-medium"
+            >
                 Jepret 📸
             </button>
-            {countdown > 0 && <p className="text-xl font-bold text-red-600">{countdown}</p>}
-            <div className="flex gap-2">
+
+            {countdown > 0 && <p className="text-2xl font-extrabold text-red-500 animate-pulse">{countdown}</p>}
+
+            <div className="flex gap-3 flex-wrap justify-center">
                 {images.map((src, index) => (
-                    <img key={index} src={src} className="w-24 h-24 object-cover rounded-lg border" />
+                    <img key={index} src={src} className="w-20 h-20 object-cover rounded-xl border-2 border-white shadow-sm" />
                 ))}
             </div>
 
-            <div className="flex gap-2">
-                <button
-                    onClick={() => setFilter("none")}
-                    className={`px-4 py-2 rounded-lg ${filter === "none" ? "bg-gray-600 text-white border-4 border-white" : "bg-gray-400 text-white"
-                        }`}
-                >
-                    Normal
-                </button>
-                <button
-                    onClick={() => setFilter("grayscale")}
-                    className={`px-4 py-2 rounded-lg ${filter === "grayscale" ? "bg-gray-900 text-white border-4 border-yellow-300" : "bg-gray-700 text-white"
-                        }`}
-                >
-                    B&W
-                </button>
-                <button
-                    onClick={() => setFilter("sepia")}
-                    className={`px-4 py-2 rounded-lg ${filter === "sepia" ? "bg-orange-700 text-white border-4 border-yellow-400" : "bg-orange-500 text-white"
-                        }`}
-                >
-                    Sepia
-                </button>
-            </div>
-
-            <div className="flex gap-2">
-                <button
-                    onClick={() => setFrame("none")}
-                    className={`px-4 py-2 rounded-lg ${frame === "none" ? "bg-gray-600 text-white border-4 border-white" : "bg-gray-400 text-white"
-                        }`}
-                >
-                    Tanpa Frame
-                </button>
-                <button
-                    onClick={() => setFrame("gold")}
-                    className={`px-4 py-2 rounded-lg ${frame === "gold" ? "bg-yellow-700 text-white border-4 border-yellow-300" : "bg-yellow-500 text-white"
-                        }`}
-                >
-                    Emas 🏆
-                </button>
-                <button
-                    onClick={() => setFrame("black")}
-                    className={`px-4 py-2 rounded-lg ${frame === "black" ? "bg-black text-white border-4 border-gray-300" : "bg-black text-white"
-                        }`}
-                >
-                    Hitam 🖤
-                </button>
-            </div>
-
-            <div className="flex gap-2">
-                <button
-                    onClick={() => setSticker(null)}
-                    className={`px-4 py-2 rounded-lg ${sticker === null ? "bg-gray-600 text-white border-4 border-white" : "bg-gray-400 text-white"
-                        }`}
-                >
-                    Tanpa Sticker
-                </button>
-                <button
-                    onClick={() => setSticker("/heart.png")}
-                    className={`px-4 py-2 rounded-lg ${sticker === "/heart.png" ? "bg-red-700 text-white border-4 border-yellow-300" : "bg-red-500 text-white"
-                        }`}
-                >
-                    ❤️ Love
-                </button>
-                <button
-                    onClick={() => setSticker("/star.png")}
-                    className={`px-4 py-2 rounded-lg ${sticker === "/star.png" ? "bg-yellow-700 text-white border-4 border-yellow-400" : "bg-yellow-500 text-white"
-                        }`}
-                >
-                    ⭐ Star
-                </button>
+            <div className="flex gap-3 w-[400px] overflow-x-auto p-2 customScrollbar">
+                {[
+                    { label: "Normal", value: "none" },
+                    { label: "Grayscale", value: "grayscale" },
+                    { label: "Sepia", value: "sepia" },
+                    { label: "Blur", value: "blur" },
+                    { label: "Brightness", value: "brightness" },
+                    { label: "Contrast", value: "contrast" },
+                    { label: "Invert", value: "invert" },
+                    { label: "Saturate", value: "saturate" },
+                    { label: "Hue Rotate", value: "hue-rotate" },
+                    { label: "Shadow", value: "shadow" },
+                ].map((item) => (
+                    <button
+                        key={item.value}
+                        onClick={() => setFilter(item.value)}
+                        className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 shadow-md ${filter === item.value
+                                ? "bg-pink-500 text-white border-4 border-yellow-300"
+                                : "bg-gray-700 text-white hover:bg-gray-600"
+                            }`}
+                    >
+                        {item.label}
+                    </button>
+                ))}
             </div>
 
 
-            <button onClick={combineImages} className="px-4 py-2 bg-green-500 text-white rounded-lg">
+            <div className="flex w-[400px] gap-3 overflow-x-auto p-2 customScrollbar">
+                {[
+                    { label: "Tanpa Frame", value: "none", color: "gray" },
+                    { label: "Emas 🏆", value: "gold", color: "yellow" },
+                    { label: "Hitam 🖤", value: "black", color: "black" },
+                    { label: "Perak 🥈", value: "silver", color: "silver" },
+                    { label: "Biru 💙", value: "blue", color: "blue" },
+                    { label: "Merah ❤️", value: "red", color: "red" },
+                    { label: "Hijau 🍀", value: "green", color: "green" },
+                    { label: "Ungu 💜", value: "purple", color: "purple" },
+                    { label: "Putih ⚪", value: "white", color: "white" },
+                    { label: "Coklat 🍫", value: "brown", color: "brown" },
+                    { label: "Oranye 🍊", value: "orange", color: "orange" },
+                    { label: "Pelangi 🌈", value: "rainbow", color: "gradient" },
+                    { label: "Berlian 💎", value: "diamond", color: "lightblue" },
+                    { label: "Galaxy ✨", value: "galaxy", color: "darkblue" }
+                ].map((item) => (
+                    <button
+                        key={item.value}
+                        onClick={() => setFrame(item.value)}
+                        className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 shadow-md ${frame === item.value
+                            ? `bg-${item.color}-700 text-white border-4 border-${item.color}-300`
+                            : `bg-${item.color}-500 text-white hover:bg-${item.color}-600`
+                            }`}
+                    >
+                        {item.label}
+                    </button>
+                ))}
+            </div>
+
+
+            <div className="flex w-[400px] gap-3 overflow-x-auto p-2 customScrollbar">
+                {[
+                    { label: "Tanpa Sticker", value: null, color: "gray" },
+                    { label: "❤️ Love", value: "/heart.png", color: "red" },
+                    { label: "⭐ Star", value: "/star.png", color: "yellow" },
+                    { label: "🔥 Fire", value: "/fire.png", color: "orange" },
+                    { label: "🎉 Party", value: "/party.png", color: "purple" },
+                    { label: "😂 Laugh", value: "/laugh.png", color: "yellow" },
+                    { label: "💀 Skull", value: "/skull.png", color: "black" },
+                    { label: "👑 King", value: "/crown.png", color: "gold" },
+                    { label: "💎 Diamond", value: "/diamond.png", color: "blue" },
+                    { label: "🎯 Target", value: "/target.png", color: "red" },
+                    { label: "💡 Idea", value: "/idea.png", color: "yellow" },
+                    { label: "🍀 Lucky", value: "/clover.png", color: "green" },
+                    { label: "☕ Coffee", value: "/coffee.png", color: "brown" },
+                    { label: "🚀 Rocket", value: "/rocket.png", color: "gray" },
+                    { label: "🎵 Music", value: "/music.png", color: "pink" },
+                ].map((item) => (
+                    <button
+                        key={item.value}
+                        onClick={() => setSticker(item.value)}
+                        className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 shadow-md ${sticker === item.value
+                            ? `bg-${item.color}-700 text-white border-4 border-${item.color}-300`
+                            : `bg-${item.color}-500 text-white hover:bg-${item.color}-600`
+                            }`}
+                    >
+                        {item.label}
+                    </button>
+                ))}
+            </div>
+
+
+            <button
+                onClick={combineImages}
+                className="px-6 py-3 bg-green-500 hover:bg-green-600 transition-all duration-300 text-white rounded-xl shadow-md text-lg font-medium"
+            >
                 Gabungkan Foto 🖼️
             </button>
 
             {result && (
                 <>
                     <div className="relative w-full max-w-md">
-                        <img src={result} className="rounded-lg shadow-lg w-full" />
+                        <img src={result} className="shadow-lg w-full" />
                         {sticker && (
-                            <img
-                                src={sticker}
-                                alt="Sticker"
-                                className="absolute top-2 right-2 w-16 h-16"
-                            />
+                            <>
+                                <img
+                                    src={sticker}
+                                    alt="Sticker"
+                                    className="absolute top-2 right-2 w-16 h-16"
+                                />
+                                <img
+                                    src={sticker}
+                                    alt="Sticker"
+                                    className="absolute bottom-15 left-2 w-16 h-16"
+                                />
+                            </>
                         )}
                     </div>
-                    <button onClick={downloadImage} className="px-4 py-2 bg-red-500 text-white rounded-lg">
+                    <button
+                        onClick={downloadImage}
+                        className="px-6 py-3 bg-red-500 hover:bg-red-600 transition-all duration-300 text-white rounded-xl shadow-md text-lg font-medium"
+                    >
                         Download ⬇️
                     </button>
                 </>
             )}
 
-
             <canvas ref={canvasRef} className="hidden" />
         </div>
     );
+
 }

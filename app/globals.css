@@ -24,3 +24,22 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Custom Scrollbar */
+.customScrollbar::-webkit-scrollbar {
+  height: 8px; /* Untuk horizontal scrollbar */
+  width: 8px;  /* Untuk vertical scrollbar */
+}
+
+.customScrollbar::-webkit-scrollbar-track {
+  background: transparent; /* Biar nggak kelihatan */
+}
+
+.customScrollbar::-webkit-scrollbar-thumb {
+  background: rgba(100, 100, 100, 0.5); /* Warna thumb dengan transparansi */
+  border-radius: 10px;
+}
+
+.customScrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 100, 100, 0.7); /* Saat hover, jadi lebih kelihatan */
+}
