@@ -10,6 +10,7 @@ import { saveAs } from "file-saver";
 export default function PhotoBooth() {
     const webcamRef = useRef<Webcam | null>(null);
     const canvasRef = useRef(null);
+    const [gabungImg, setGabungImg] = useState(false);
     const [images, setImages] = useState([]);
     const [result, setResult] = useState(null);
     const [filter, setFilter] = useState("none");
@@ -47,7 +48,7 @@ export default function PhotoBooth() {
 
     const combineImages = () => {
         if (images.length < 3) return alert("Ambil 3 foto dulu!");
-
+        setGabungImg(true)
         const canvas = canvasRef.current;
         const ctx = canvas.getContext("2d");
 
@@ -121,17 +122,16 @@ export default function PhotoBooth() {
 
             ctx.strokeRect(5, 5, canvas.width - 10, canvas.height - 10);
 
-
             images.forEach((src, index) => {
                 const imgPart = new Image();
                 imgPart.src = src;
                 imgPart.onload = () => {
                     const xPos = sidePadding;
                     const yPos = topPadding + index * (imgHeight + padding);
-            
+
                     if (filter !== "none") {
                         ctx.filter = "none";
-            
+
                         if (filter === "grayscale") {
                             ctx.filter = "grayscale(100%)";
                         } else if (filter === "sepia") {
@@ -155,24 +155,11 @@ export default function PhotoBooth() {
                             ctx.shadowOffsetY = 5;
                         }
                     }
-            
-                    // Gambar gambar utama setelah filter diterapkan
+
                     ctx.drawImage(imgPart, xPos, yPos, imgWidth, imgHeight);
-            
-                    // Reset filter setelah gambar selesai digambar
+
                     ctx.filter = "none";
-            
-                    // Tambahkan sticker kalau di gambar ke-3
-                    if (index === 2 && sticker) {
-                        const stickerImg = new Image();
-                        stickerImg.src = sticker;
-                        stickerImg.onload = () => {
-                            const stickerSize = 80;
-                            ctx.drawImage(stickerImg, xPos + imgWidth - stickerSize - 10, yPos + imgHeight - stickerSize - 10, stickerSize, stickerSize);
-                        };
-                    }
-            
-                    // Tambahkan tanggal di gambar ke-3
+
                     if (index === 2) {
                         ctx.fillStyle = "black";
                         ctx.font = `${textSize}px 'Courier New', monospace`;
@@ -184,11 +171,25 @@ export default function PhotoBooth() {
                             year: "numeric",
                         });
                         ctx.fillText(today, canvas.width / 2, canvas.height - bottomSpace / 2);
+
+                        if (sticker) {
+                            const stickerImg = new Image();
+                            stickerImg.src = sticker;
+                            stickerImg.onload = () => {
+                                const stickerSize = 80;
+                                ctx.drawImage(stickerImg, canvas.width - stickerSize - 20, 20, stickerSize, stickerSize);
+                                ctx.drawImage(stickerImg, 10, canvas.height - stickerSize - 70, stickerSize, stickerSize);
+                                setResult(canvas.toDataURL("image/png"));
+                            };
+                        } else {
+                            setResult(canvas.toDataURL("image/png"));
+                        }
+
                         setResult(canvas.toDataURL("image/png"));
                     }
                 };
             });
-            
+
         };
     };
 
@@ -241,8 +242,8 @@ export default function PhotoBooth() {
                         key={item.value}
                         onClick={() => setFilter(item.value)}
                         className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 shadow-md ${filter === item.value
-                                ? "bg-pink-500 text-white border-4 border-yellow-300"
-                                : "bg-gray-700 text-white hover:bg-gray-600"
+                            ? "bg-pink-500 text-white border-4 border-yellow-300"
+                            : "bg-gray-700 text-white hover:bg-gray-600"
                             }`}
                     >
                         {item.label}
@@ -313,7 +314,7 @@ export default function PhotoBooth() {
                 ))}
             </div>
 
-
+            { gabungImg && (<small className="text-left text-[lightblue]">*Klik gabungkan lagi buat update yaa</small>)}
             <button
                 onClick={combineImages}
                 className="px-6 py-3 bg-green-500 hover:bg-green-600 transition-all duration-300 text-white rounded-xl shadow-md text-lg font-medium"
@@ -325,7 +326,7 @@ export default function PhotoBooth() {
                 <>
                     <div className="relative w-full max-w-md">
                         <img src={result} className="shadow-lg w-full" />
-                        {sticker && (
+                        {/* {sticker && (
                             <>
                                 <img
                                     src={sticker}
@@ -338,7 +339,7 @@ export default function PhotoBooth() {
                                     className="absolute bottom-15 left-2 w-16 h-16"
                                 />
                             </>
-                        )}
+                        )} */}
                     </div>
                     <button
                         onClick={downloadImage}
