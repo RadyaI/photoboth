@@ -314,7 +314,7 @@ export default function PhotoBooth() {
                 ))}
             </div>
 
-            { gabungImg && (<small className="text-left text-[lightblue]">*Klik gabungkan lagi buat update yaa</small>)}
+            { gabungImg && (<small className="text-left text-[red]">*Klik gabungkan lagi buat update yaa</small>)}
             <button
                 onClick={combineImages}
                 className="px-6 py-3 bg-green-500 hover:bg-green-600 transition-all duration-300 text-white rounded-xl shadow-md text-lg font-medium"
